@@ -1,6 +1,3 @@
-import 'dart:typed_data';
-
-import '/src/extensions/image_provider_ext.dart';
 import '/src/painters/cropped_indicator_painter.dart';
 import '/src/painters/swipe_path_painter.dart';
 import '/src/utils/image_utils.dart';
@@ -9,25 +6,30 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 
-/// A widget that provides interactive image cropping functionality.
+/// A widget that provides interactive image cropping functionality with swipe gestures.
 ///
-/// This widget displays an image and allows users to draw a selection area
-/// by swiping their finger across the image. When the user completes the
-/// gesture, it calculates a bounding rectangle and crops the selected area.
+/// This widget displays an image from bytes and allows users to draw a selection area
+/// by swiping their finger across the image. When the user completes the gesture,
+/// it calculates a bounding rectangle from the swipe path and crops the selected area.
 ///
 /// Features:
-/// - Real-time drawing visualization while swiping
-/// - Bounding rectangle calculation from swipe path
-/// - Visual indicators for the cropped area
+/// - Real-time drawing visualization while swiping with customizable stroke
+/// - Automatic bounding rectangle calculation from swipe path points
+/// - Visual indicators showing the final cropped area
 /// - Automatic image cropping when selection is complete
+/// - Performance optimized with RepaintBoundary for smooth drawing
+/// - Gesture handling with pan start, update, and end events
 ///
 /// Example usage:
 /// ```dart
 /// ImageSwipperWidget(
-///   imageProvider: AssetImage('assets/sample.jpg'),
-///   onCroppedImage: (img.Image? croppedImage) {
+///   imageBytes: imageBytes, // Uint8List
+///   strokeWidth: 20.0,
+///   swipeColor: Colors.blue.withOpacity(0.7),
+///   indicatorColor: Colors.red,
+///   onSwipeImage: (img.Image? croppedImage) {
 ///     if (croppedImage != null) {
-///       print('Image cropped successfully');
+///       print('Image cropped successfully: ${croppedImage.width}x${croppedImage.height}');
 ///     }
 ///   },
 /// )
@@ -35,9 +37,12 @@ import 'package:image/image.dart' as img;
 class ImageSwipperWidget extends StatefulWidget {
   /// Creates an [ImageSwipperWidget].
   ///
-  /// The [imageProvider] parameter is required and specifies the image to display.
+  /// The [imageBytes] parameter is required and specifies the image data to display.
   ///
   /// Optional parameters:
+  /// - [strokeWidth]: Width of the swipe stroke for drawing (default: 16.0)
+  /// - [swipeColor]: Color of the swipe path during drawing (uses theme if null)
+  /// - [indicatorColor]: Color of the selection indicator (uses theme if null)
   /// - [onSwipeImage]: Callback called when image cropping is completed
   const ImageSwipperWidget({
     super.key,
@@ -48,19 +53,28 @@ class ImageSwipperWidget extends StatefulWidget {
     this.onSwipeImage,
   });
 
-  /// The image provider that supplies the image to be displayed and cropped.
+  /// The image data (bytes) that supplies the image to be displayed and cropped.
   final Uint8List imageBytes;
 
+  /// Width of the stroke used for drawing the swipe path.
+  ///
+  /// Defaults to 16.0 pixels.
   final double strokeWidth;
 
+  /// Color of the swipe path drawn while the user is drawing.
+  ///
+  /// If null, uses the theme's primary color with opacity.
   final Color? swipeColor;
 
+  /// Color of the selection indicator shown after drawing is complete.
+  ///
+  /// If null, uses the theme's accent color.
   final Color? indicatorColor;
 
   /// Callback function called when image cropping is completed.
   ///
   /// The callback receives an [img.Image] object containing the cropped image,
-  /// or null if cropping failed.
+  /// or null if cropping failed or the image is too small (< 32x32 pixels).
   final ValueChanged<img.Image?>? onSwipeImage;
 
   @override
@@ -69,7 +83,9 @@ class ImageSwipperWidget extends StatefulWidget {
 
 /// Private state class for [ImageSwipperWidget].
 ///
-/// Manages the drawing state, swipe path tracking, and image processing.
+/// Manages the drawing state, swipe path tracking, bounding rectangle calculation,
+/// and image processing. Uses ValueNotifiers for reactive UI updates during
+/// the drawing process and processing states.
 class _ImageSwipperWidgetState extends State<ImageSwipperWidget> {
   /// Whether the user is currently drawing/swiping on the image.
   final ValueNotifier<bool> _drawingNotifier = ValueNotifier(false);
@@ -193,7 +209,13 @@ class _ImageSwipperWidgetState extends State<ImageSwipperWidget> {
   ///
   /// This method is called when the user completes drawing a selection area.
   /// It converts the screen coordinates to image coordinates and performs
-  /// the actual image cropping operation.
+  /// the actual image cropping operation using isolate for performance.
+  ///
+  /// The cropping process:
+  /// 1. Validates that a bounding rectangle exists
+  /// 2. Ensures image bytes are available
+  /// 3. Calls [ImageUtils.cropImageFromScreen] with isolate processing
+  /// 4. Calls the [onSwipeImage] callback with the result
   ///
   /// Parameters:
   /// - [displaySize]: The size of the display area where the image is shown

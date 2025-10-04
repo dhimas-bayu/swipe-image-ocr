@@ -1,4 +1,4 @@
-name: swipe_image_reader
+name: swipe_image_ocr
 description: "A Flutter package that provides interactive image cropping and text recognition functionality using Google ML Kit. Users can draw selection areas on images by swiping their finger, and the package automatically crops the selected area and performs OCR text recognition."
 version: 0.0.1
 homepage: https://github.com/dhimas-bayu/swipe-image-reader.git

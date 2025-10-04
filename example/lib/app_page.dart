@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:swipe_image_reader/swipe_image_reader.dart';
+import 'package:swipe_image_ocr/swipe_image_ocr.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -29,7 +29,7 @@ class _AppPageState extends State<AppPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Swipe Image Reader'),
+        title: const Text('Swipe Image OCR'),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(56.0),
@@ -87,7 +87,7 @@ class _AppPageState extends State<AppPage> {
                   valueListenable: _fileNotifier,
                   builder: (context, image, child) {
                     if (image == null) return const SizedBox();
-                    return SwipeImageReader(
+                    return SwipeImageOCR(
                       imageBytes: image.readAsBytesSync(),
                       borderRadius: BorderRadius.circular(16.0),
                       onSwipeImage: (file) {
