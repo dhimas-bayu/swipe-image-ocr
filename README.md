@@ -11,13 +11,15 @@ A Flutter package that provides interactive image cropping and text recognition 
 - 📱 **Cross Platform**: Supports both Android and iOS
 - 🛡️ **Error Handling**: Comprehensive error handling with callbacks
 
+
+
 ## Installation
 
 Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  swipe_image_ocr: ^0.0.1
+  swipe_image_ocr: ^0.0.1+1
 ```
 
 Then run:
