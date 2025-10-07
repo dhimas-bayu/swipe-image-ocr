@@ -1,6 +1,6 @@
 name: swipe_image_ocr
 description: "A Flutter package that provides interactive image cropping and text recognition functionality using Google ML Kit."
-version: 0.0.1
+version: 0.0.1+1
 homepage: https://github.com/dhimas-bayu/swipe-image-ocr.git
 publish_to: https://github.com/dhimas-bayu/swipe-image-ocr.git
 
