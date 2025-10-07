@@ -2,6 +2,9 @@
 
 A Flutter package that provides interactive image cropping and text recognition functionality using Google ML Kit. Users can draw selection areas on images by swiping their finger, and the package automatically crops the selected area and performs OCR text recognition.
 
+![Example GIF](https://raw.githubusercontent.com/dhimas-bayu/swipe-image-ocr/refs/heads/master/assets/example.gif)
+
+
 ## Features
 
 - 🎯 **Interactive Image Cropping**: Draw selection areas by swiping across images
@@ -10,8 +13,6 @@ A Flutter package that provides interactive image cropping and text recognition 
 - 🎨 **Customizable UI**: Configurable stroke width, colors, and border radius
 - 📱 **Cross Platform**: Supports both Android and iOS
 - 🛡️ **Error Handling**: Comprehensive error handling with callbacks
-
-
 
 ## Installation
 
