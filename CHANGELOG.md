@@ -1,3 +1,8 @@
+## 0.0.1+1
+
+* Remove unused dependencies.
+* Update README.md
+
 ## 0.0.1
 
-* TODO: Describe initial release.
+* Initial release.
